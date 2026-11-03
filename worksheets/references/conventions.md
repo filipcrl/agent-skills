@@ -38,9 +38,19 @@ asked: history, anecdotes, motivation slides, tool screenshots, things mentioned
 4. Verify every calculation (ideally with a quick Python snippet) before writing the answer. For
    cycle-by-cycle traces, state the timing model (structure sizes, dispatch and retire rules,
    latencies) and pick query cycles far from transitions so the answer is robust.
-5. Answers teach, not just give the final value: show the formula, the substitution, and one
-   sentence of why. Note where course conventions are debatable. The key restates each question,
-   so write answers that read naturally right after it (no "see above").
+5. Answers teach, not just give the final value. Write full, worked explanations (typically a
+   short paragraph or more, not a one-liner), as if tutoring a student who got it wrong:
+   - State the underlying concept or rule and why it applies here.
+   - Show every step: formula, substitution with units, intermediate results, final value.
+   - Explain the reasoning behind each non-obvious step (why this case, why this formula, why
+     this row of the trace changes).
+   - Point out the common mistake or trap and why it is wrong.
+   - End with a one-line takeaway or sanity check (order of magnitude, limiting case).
+   For conceptual questions, give the model answer plus a few sentences explaining it and,
+   where useful, a contrast with the closely related concept. For tables and traces, add notes
+   below the filled table explaining the key rows. Note where course conventions are
+   debatable. The key restates each question, so write answers that read naturally right after
+   it (no "see above").
 6. Given data goes inside the table. When a fill-in table has per-row inputs, pre-fill them:
    `#ft(header, (("1", "1.2", "0"), ...))` (leading cells given, the rest blank). Never list the
    inputs separately next to an empty table. The key drops the blank table, so the filled `#at`

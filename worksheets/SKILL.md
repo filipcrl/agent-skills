@@ -76,7 +76,9 @@ Use past exams to decide what matters, but do not overfit to them:
    tagged with `#ex("YEAR Qn")`, fill-in tables via `#ft` with per-row given data pre-filled in
    the table, filled answer tables via `#at`. Check every number with a quick calculation before
    writing the answer. For timing or trace problems, state the full machine model in a box and
-   choose robust query points.
+   choose robust query points. Answers must be long, worked explanations, not bare results:
+   explain the concept, show every step, justify non-obvious moves, and flag the common mistake
+   (see rule 5 in `references/conventions.md`).
 7. Figures, sparingly. Add one only when the question cannot be followed reliably from text:
    multi-transistor circuits whose topology would take more than ~2 sentences, given plots or
    characteristics, or the exam's own schematic for an exam-mirror question. Prefer cropping from
