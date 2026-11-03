@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Generated worksheet artifacts (if scripts are run inside the repo)
+*.pdf
+*-worksheet.typ
+*-answer-key.typ
+_render_*.png
+_grid_*.png
+envtest-*
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
