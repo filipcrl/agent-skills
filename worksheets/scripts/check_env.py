@@ -26,4 +26,9 @@ with tempfile.TemporaryDirectory() as d:
     except Exception as e:
         sys.exit(f"Typst build failed ({e!r}). Install Typst 0.11+ (brew install typst, "
                  "winget install Typst.Typst) or: pip install typst")
+try:
+    import schemdraw, matplotlib  # noqa: F401
+except ImportError:
+    print("Note: schemdraw/matplotlib missing; drawn circuits (logic_fig.py) need: "
+          "pip install schemdraw matplotlib")
 print("Ready.")

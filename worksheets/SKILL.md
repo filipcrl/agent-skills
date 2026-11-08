@@ -48,6 +48,7 @@ Use past exams to decide what matters, but do not overfit to them:
   `pip install pymupdf`.
 - Typst 0.11 or newer, either the CLI (`brew install typst`, `winget install Typst.Typst`,
   `cargo install typst-cli`, or a release binary) or `pip install typst` (wslib falls back to it).
+- For drawn figures: `pip install schemdraw matplotlib` (only needed if a sheet draws circuits).
 - On a new machine, run `python3 <skill>/scripts/check_env.py` once. It checks the above and
   test-compiles a sheet with µ □ ≈ γ. All files are read and written as UTF-8 (needed on Windows).
 - Paper is A4 by default; pass `Sheet(..., paper="us-letter")` for US users.
@@ -79,14 +80,26 @@ Use past exams to decide what matters, but do not overfit to them:
    choose robust query points. Answers must be long, worked explanations, not bare results:
    explain the concept, show every step, justify non-obvious moves, and flag the common mistake
    (see rule 5 in `references/conventions.md`).
-7. Figures, sparingly. Add one only when the question cannot be followed reliably from text:
-   multi-transistor circuits whose topology would take more than ~2 sentences, given plots or
-   characteristics, or the exam's own schematic for an exam-mirror question. Prefer cropping from
-   the course material so notation matches: run `python3 <skill>/scripts/crop_figure.py grid
+7. Figures where they really help. For each question ask: would a reader understand it faster
+   or more reliably with a picture than with the text alone? If yes, add one; if it would only
+   decorate or repeat what one sentence already says, don't. Typical yes: a circuit, netlist or
+   structure the reader would otherwise sketch themselves to work on it (any multi-gate or
+   multi-transistor circuit, a fault or bridge location, a scan chain, a pipeline or FSM), a
+   given plot or characteristic, a timing diagram, the exam's own figure for an exam-mirror
+   question. Typical no: definitions, conceptual "why" questions, simple formulas, a single
+   gate. Keep the text complete anyway (the figure supports it, it does not replace it), and
+   reuse one figure for a whole part when several questions share it. See "Figures" in
+   `references/conventions.md`.
+   Sources, in order: crop from the course material so notation matches; draw gate-level
+   circuits from their netlist with `scripts/logic_fig.py`; draw anything else with
+   schemdraw (transistor circuits, blocks) or Typst/cetz (plots, timing, graphs). To crop, run `python3 <skill>/scripts/crop_figure.py grid
    deck.pdf PAGE`, read the box off the grid image, then `crop_figure.py crop deck.pdf PAGE X0 Y0
    X1 Y1 figs/name.png`. Look at every crop and redo it until no label is clipped and no slide
-   text, equations or footers are included. Draw by hand (Typst/cetz) only if no source drawing
-   exists. Embed with `#fig("figs/name.png", w: 30%)` inside the question (or once in a part
+   text, equations or footers are included. For a gate-level circuit, call
+   `circuit("figs/name.svg", inputs=[...], gates=[("g1", "AND", "a ~b"), ...], marks={...},
+   bridges=[...])` (layout is automatic; see the docstring) from a `figs.py` next to the build
+   scripts. Fix any printed warning with `y=` hints. Look at every figure before embedding it
+   and redo it if wires cross gates, labels overlap or it is cluttered. Embed with `#fig("figs/name.png", w: 30%)` inside the question (or once in a part
    intro if the whole part uses it) and refer to it as "the circuit below". Keep crops black and
    white and at most ~40% width (wide circuits up to ~65%).
 8. Build with `python3 build_<topic>.py` (compiles both PDFs).

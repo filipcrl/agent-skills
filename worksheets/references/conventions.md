@@ -77,10 +77,34 @@ slides get folded into a related sheet as a short section, or left out (say so).
 
 ## Figures
 
-Only where text is not enough: usually 0 to 3 per sheet. The question refers to it ("the circuit
-below") and still states all numbers in text. A whole part may share one figure in its intro.
-No colour, no slide titles, equations or footers in the crop, no clipped labels. Store crops in
-`figs/` next to the build scripts.
+Add a figure when it clearly makes the question easier to understand, and only then. The test:
+would a student working on this question start by sketching it? If so, give them the sketch.
+If the picture would only repeat one clear sentence, or decorate a conceptual question, leave
+it out. Don't go overboard: most sheets need a handful, not one per question.
+
+| Usually worth a figure | Usually not |
+|---|---|
+| A circuit with 2+ gates or transistors given as a netlist or in words | A single gate or a formula |
+| Where a fault, bridge or test point sits in a circuit | Definitions and "why" questions |
+| Scan chains, pipelines, FSMs, block structures to trace | Lists of facts, comparisons |
+| Given plots, characteristics, waveforms, timing diagrams | Calculations from stated numbers |
+| The exam's own figure for an exam-mirror question | Anything a single clear sentence conveys |
+
+Rules:
+- The text stays complete: the question still defines the circuit or data in words ("g1 =
+  AND(a, b)") and refers to the figure as "the circuit below". The figure is support, not the
+  only source.
+- Several questions on the same circuit share one figure, placed in the part intro ("the
+  circuit at the start of this part"), since pointing to another question is not allowed.
+- Mark what the question is about on the figure when it helps (a fault as × with "s-a-0", a
+  bridge as a dashed line), but never mark the answer.
+- No colour, no slide titles, equations or footers in crops, no clipped or overlapping labels.
+  Store figures in `figs/` next to the build scripts; keep the generating code (`figs.py`) so
+  figures can be regenerated.
+- Width: about 30 to 45% for small circuits, up to 65% for wide ones.
+- Gate-level circuits: `scripts/logic_fig.py` (`circuit(...)`, automatic layout, inversion
+  bubbles with `~a`, fault marks, bridges). Other drawings: schemdraw or Typst/cetz.
+- Always look at the rendered figure, then at the rendered sheet page, before moving on.
 
 ## Style
 
