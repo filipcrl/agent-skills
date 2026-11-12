@@ -9,6 +9,24 @@ For each topic this skill produces `<slug>-worksheet.pdf` (questions with answer
 `<slug>-answer-key.pdf`, generated from a Python content script via `scripts/wslib.py`.
 Read `references/conventions.md` before writing questions.
 
+## Output layout
+
+Everything lives in one `worksheets/` directory in the project, split into three folders:
+
+```
+worksheets/
+  questions/  <slug>-worksheet.pdf for every topic, plus ALL-worksheets.pdf
+  answers/    <slug>-answer-key.pdf for every topic, plus ALL-answer-keys.pdf
+  sources/    wslib.py, build_<topic>.py, figs.py, figs/, the generated <slug>-*.typ,
+              and any other source files (mock-exam builders, custom question files)
+```
+
+Never leave PDFs, `.typ` files or scripts loose in `worksheets/`. `wslib.py` enforces this: it
+writes the `.typ` next to itself in `sources/` (so `figs/...` paths resolve) and compiles the
+PDFs into `../questions/` and `../answers/`. Run build scripts and `check_sheets.py` from
+`sources/`. Custom builders and merge scripts must follow the same layout. If an existing
+project uses a flat layout, move its files into these folders first.
+
 ## What a good worksheet is
 
 A worksheet is a short course that teaches the topic, not a pile of exam questions. Before
@@ -69,8 +87,8 @@ Use past exams to decide what matters, but do not overfit to them:
    in `references/conventions.md`. For each sheet, sketch the learning path: the list of concepts
    in the order they should be learned, and which question teaches each one. Tell the user the
    plan briefly (topic, slides, weight, number of questions), then proceed.
-5. Set up. In the project (for example `worksheets/`), copy `scripts/wslib.py` and write one
-   `build_<topic>.py` per sheet (see `assets/example_build.py`). Structure each sheet as Parts
+5. Set up. Create `worksheets/{questions,answers,sources}/`, copy `scripts/wslib.py` into
+   `worksheets/sources/` and write one `build_<topic>.py` per sheet there (see `assets/example_build.py`). Structure each sheet as Parts
    A, B, C... that go from basics to exam-style synthesis, each with a one-line intro.
 6. Write the questions following the conventions: self-contained (no "slide 4", "the lecture's
    example", "previous question"; restate everything inline), fresh numbers, exam-format mirrors
@@ -97,31 +115,33 @@ Use past exams to decide what matters, but do not overfit to them:
    X1 Y1 figs/name.png`. Look at every crop and redo it until no label is clipped and no slide
    text, equations or footers are included. For a gate-level circuit, call
    `circuit("figs/name.svg", inputs=[...], gates=[("g1", "AND", "a ~b"), ...], marks={...},
-   bridges=[...])` (layout is automatic; see the docstring) from a `figs.py` next to the build
+   bridges=[...])` (layout is automatic; see the docstring) from a `figs.py` in `sources/`, next to the build
    scripts. Fix any printed warning with `y=` hints. Look at every figure before embedding it
    and redo it if wires cross gates, labels overlap or it is cluttered. Embed with `#fig("figs/name.png", w: 30%)` inside the question (or once in a part
    intro if the whole part uses it) and refer to it as "the circuit below". Keep crops black and
    white and at most ~40% width (wide circuits up to ~65%).
-8. Build with `python3 build_<topic>.py` (compiles both PDFs).
-9. Check with `python3 <skill>/scripts/check_sheets.py` and fix every `[ref]` and `[underscore]`
+8. Build with `cd worksheets/sources && python3 build_<topic>.py` (compiles both PDFs into
+   `../questions/` and `../answers/`).
+9. Check with `python3 <skill>/scripts/check_sheets.py` (run in `sources/`) and fix every `[ref]` and `[underscore]`
    hit. Skim the question list for questions that silently rely on slide content (unexplained
    numbers or figures, "the three X from class"), and for the progression: does each question
    add something, and are there near-duplicates to cut? Render a few pages with tables, traces or
    code (`check_sheets.py --render <slug> <page> ...`), look at the PNGs, fix layout problems,
    rebuild, and delete `_render_*.png`. Open one answer-key page to confirm statements and
    answers appear together.
-10. Combined sheets. Always merge all topic sheets into `ALL-worksheets.pdf` and
-    `ALL-answer-keys.pdf` (with PDF bookmarks per topic). Only if the user explicitly asks for a
+10. Combined sheets. Always merge all topic sheets into `questions/ALL-worksheets.pdf` and
+    `answers/ALL-answer-keys.pdf` (with PDF bookmarks per topic). Only if the user explicitly asks for a
     mock or practice exam, build a mixed-topic one (`build_mock.py`) in the official past-exam
     format (category tag, points, for example 4-option MCQ). Its distractors should come from
-    computed typical mistakes and differ from the correct value by at least ~15%.
+    computed typical mistakes and differ from the correct value by at least ~15%. Its PDFs go
+    in `questions/` and `answers/`, its builder in `sources/`.
 11. Report briefly: files, a per-sheet table (topic, slides, number of questions, exam weight,
     highlights), assumptions (for example the timing model or debatable course conventions), and
     topics left out and why.
 
 ## Notes
 
-- The build scripts are the editable source; regenerate the PDFs after any change.
+- The build scripts in `sources/` are the editable source; regenerate the PDFs after any change.
 - When the user adds slides or asks for revisions, edit the content scripts, rebuild the
   affected sheets, and re-run `check_sheets.py`.
 - Typst helpers available in markup: `#ex`, `#ft`, `#at`, `#fig` (documented at the top of

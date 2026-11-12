@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Check generated worksheets. Run in the directory with the .typ files.
+"""Check generated worksheets. Run in worksheets/sources/ (where the .typ files are);
+PDFs are read from ../questions/ and ../answers/.
 
     python3 check_sheets.py [slug ...]            references to slides/other questions, stray
                                                   underscores, and a list of all questions
@@ -37,7 +38,7 @@ def render(slug, pages):
     except ImportError:
         import fitz as pymupdf
     for kind in ("worksheet", "answer-key"):
-        d = pymupdf.open(f"{slug}-{kind}.pdf")
+        d = pymupdf.open(f"../{'questions' if kind == 'worksheet' else 'answers'}/{slug}-{kind}.pdf")
         for p in pages:
             name = f"_render_{slug}_{kind}_p{p}_{int(time.time())}.png"  # fresh name: viewers cache
             d[p].get_pixmap(dpi=60).save(name)

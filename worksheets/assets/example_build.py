@@ -1,5 +1,6 @@
-"""Minimal example content script. Copy into the project's worksheets/ dir together with
-scripts/wslib.py, rename, and fill in. Run: python3 build_<topic>.py"""
+"""Minimal example content script. Copy into the project's worksheets/sources/ dir together
+with scripts/wslib.py, rename, and fill in. Run from sources/: python3 build_<topic>.py
+Outputs: ../questions/<slug>-worksheet.pdf and ../answers/<slug>-answer-key.pdf"""
 from wslib import Sheet
 
 s = Sheet("Cache Coherence", "coherence", course="CS471")

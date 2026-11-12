@@ -99,7 +99,7 @@ Rules:
 - Mark what the question is about on the figure when it helps (a fault as × with "s-a-0", a
   bridge as a dashed line), but never mark the answer.
 - No colour, no slide titles, equations or footers in crops, no clipped or overlapping labels.
-  Store figures in `figs/` next to the build scripts; keep the generating code (`figs.py`) so
+  Store figures in `sources/figs/` next to the build scripts; keep the generating code (`figs.py`) so
   figures can be regenerated.
 - Width: about 30 to 45% for small circuits, up to 65% for wide ones.
 - Gate-level circuits: `scripts/logic_fig.py` (`circuit(...)`, automatic layout, inversion

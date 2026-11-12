@@ -6,7 +6,13 @@
     s.q(r'''Question in Typst markup.
     (a) first sub-part
     (b) second sub-part #ex("2019 Q2b")''', "3cm", r'''Answer.''')
-    s.build()   # writes <slug>-worksheet.pdf and <slug>-answer-key.pdf
+    s.build()   # writes ../questions/<slug>-worksheet.pdf and ../answers/<slug>-answer-key.pdf
+
+Layout (wslib.py and the build scripts live in sources/):
+    worksheets/
+      sources/    wslib.py, build_<topic>.py, figs/, generated <slug>-*.typ
+      questions/  <slug>-worksheet.pdf, ALL-worksheets.pdf
+      answers/    <slug>-answer-key.pdf, ALL-answer-keys.pdf
 
 Typst helpers usable in questions and answers:
     #ex("2021 Q3")                 tag linking to a past exam question
@@ -68,12 +74,17 @@ def nodash(s):
     return re.sub(r"\s*[—–]\s*", ": ", s)
 
 
-def compile_typst(f):
+SRC = pathlib.Path(__file__).resolve().parent          # worksheets/sources
+OUT = {"worksheet": SRC.parent / "questions", "answer-key": SRC.parent / "answers"}
+
+
+def compile_typst(f, out):
+    out.parent.mkdir(parents=True, exist_ok=True)
     if shutil.which("typst"):
-        subprocess.run(["typst", "compile", f], check=True)
+        subprocess.run(["typst", "compile", str(f), str(out)], check=True)
     else:
         import typst  # pip install typst
-        typst.compile(f, output=f[:-4] + ".pdf")
+        typst.compile(str(f), output=str(out))
 
 
 class Sheet:
@@ -93,22 +104,25 @@ class Sheet:
         w = self.head + title.replace("KIND", "Worksheet") + (
             "Name: #box(width: 3in, repeat[\\_]) #h(1fr) Date: #box(width: 1.4in, repeat[\\_])\n#v(6pt)\n")
         k = self.head + title.replace("KIND", "Answer Key") + "#v(8pt)\n"
-        n = 0
+        n, pending = 0, ""
         for it in self.items:
             if len(it) == 2:
                 t, intro = it
-                w += (f'#block(breakable: false, stroke: 0.8pt + black, inset: 6pt, width: 100%)'
-                      f'[#text(12pt, weight: "bold")[{t}] \\ #text(9pt)[{intro}]]\n#v(4pt)\n')
+                # held back and emitted inside the next question's unbreakable block,
+                # so a part header is never orphaned at the bottom of a page
+                pending = (f'#block(breakable: false, stroke: 0.8pt + black, inset: 6pt, width: 100%)'
+                           f'[#text(12pt, weight: "bold")[{t}] \\ #text(9pt)[{intro}]]\n#v(4pt)\n')
                 k += f'#v(4pt)\n#text(12pt, weight: "bold")[{t}]\n\n#text(9pt)[{intro}]\n\n'
             else:
                 n += 1
                 text, space, ans = it
-                w += (f'#block(breakable: false, width: 100%)[*{n}.* {text}\n#v({space})]\n'
+                w += (f'#block(breakable: false, width: 100%)[{pending}*{n}.* {text}\n#v({space})]\n'
                       f'#line(length: 100%, stroke: 0.3pt)\n')
+                pending = ""
                 k += (f'#block(stroke: 0.5pt + black, inset: 5pt, width: 100%)[*{n}.* {strip_ft(text)}]\n'
                       f'*Answer.* {ans}\n#v(6pt)\n\n')
         for kind, body in (("worksheet", w), ("answer-key", k)):
-            f = f"{self.slug}-{kind}.typ"
-            pathlib.Path(f).write_text(body, encoding="utf-8")
-            compile_typst(f)
+            f = SRC / f"{self.slug}-{kind}.typ"   # .typ stays in sources/ so figs/ paths resolve
+            f.write_text(body, encoding="utf-8")
+            compile_typst(f, OUT[kind] / f"{self.slug}-{kind}.pdf")
         print(f"{self.slug}: {n} questions")
